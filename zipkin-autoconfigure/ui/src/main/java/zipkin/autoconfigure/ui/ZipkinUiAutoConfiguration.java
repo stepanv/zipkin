@@ -14,9 +14,12 @@
 package zipkin.autoconfigure.ui;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -75,6 +79,9 @@ public class ZipkinUiAutoConfiguration extends WebMvcConfigurerAdapter {
   @Value("classpath:zipkin-ui/index.html")
   Resource indexHtml;
 
+//  @Value("${zipkin.ui.context-root}")
+//  String contextRoot;
+
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/zipkin/**")
@@ -115,10 +122,15 @@ public class ZipkinUiAutoConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @RequestMapping(value = "/zipkin/index.html", method = GET)
-  public ResponseEntity<Resource> serveIndex() {
+  public ResponseEntity<String> serveIndex() throws IOException {
+    String replace = StreamUtils.copyToString(indexHtml.getInputStream(), StandardCharsets.UTF_8);
+//                                .replace("<base href=\"/zipkin/\">", "<base href=\"" + contextRoot + "/zipkin/\">");
+
+    System.out.println(replace);
+
     return ResponseEntity.ok()
         .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-        .body(indexHtml);
+        .body(replace);
   }
 
   /**

@@ -127,6 +127,7 @@ zipkin:
     # - .*example2.com
     # Default is "match all websites"
     instrumented: .*
+    context-root: ${CONTEXT_ROOT:/zipkin/}
 
 server:
   port: ${QUERY_PORT:9411}

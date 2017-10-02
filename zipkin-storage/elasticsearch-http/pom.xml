@@ -99,4 +99,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipTests>true</skipTests>
+          <skipITs>true</skipITs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
